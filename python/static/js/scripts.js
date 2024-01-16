@@ -20,3 +20,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+// scripts.js
+function moveItem(element, direction) {
+    var id = element.getAttribute('data-id');
+    fetch(`/move/${id}/${direction}`, {
+        method: 'POST'
+    }).then(response => {
+        if (response.ok) {
+            location.reload(); // ページを再読み込みしてリストの順序を更新
+        } else {
+            console.error('Error moving item');
+        }
+    });
+}

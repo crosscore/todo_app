@@ -14,28 +14,38 @@ def get_db_connection():
 
 # Create a table called TODOS
 def create_table():
+    conn = get_db_connection()
     try:
-        conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS TODOS
                         (ID INTEGER PRIMARY KEY AUTOINCREMENT,
                         TASK TEXT NOT NULL,
                         STATUS TEXT NOT NULL,
                         CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        UPDATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+                        UPDATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        ORDER INTEGER)''')
         conn.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
     finally:
         conn.close()
 
+
 # Function to add new ToDo
 def add_todo(task):
     conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO TODOS (TASK, STATUS) VALUES (?, 'pending')", (task,))
-    conn.commit()
-    conn.close()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT MAX(ORDER) FROM TODOS")
+        max_order = cursor.fetchone()[0]
+        next_order = 1 if max_order is None else max_order + 1
+
+        cursor.execute("INSERT INTO TODOS (TASK, STATUS, ORDER) VALUES (?, 'pending', ?)", (task, next_order))
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    finally:
+        conn.close()
 
 # Function to display ToDos by status
 def view_todos_by_status(status):
@@ -122,6 +132,31 @@ def delete(id):
     delete_todo(id)
     return redirect(url_for('index'))
 
+@app.route('/move/<int:id>/<direction>', methods=['POST'])
+def move_item(id, direction):
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT ORDER FROM TODOS WHERE ID = ?", (id,))
+        current_order = cursor.fetchone()[0]
+        if direction == 'up':
+            # 上に移動する場合
+            cursor.execute("SELECT ID, ORDER FROM TODOS WHERE ORDER < ? ORDER BY ORDER DESC LIMIT 1", (current_order,))
+        elif direction == 'down':
+            # 下に移動する場合
+            cursor.execute("SELECT ID, ORDER FROM TODOS WHERE ORDER > ? ORDER BY ORDER ASC LIMIT 1", (current_order,))
+        row = cursor.fetchone()
+        if row:
+            swap_id, swap_order = row
+            cursor.execute("UPDATE TODOS SET ORDER = ? WHERE ID = ?", (swap_order, id))
+            cursor.execute("UPDATE TODOS SET ORDER = ? WHERE ID = ?", (current_order, swap_id))
+            conn.commit()
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return '', 500 # Internal Server Error
+    finally:
+        conn.close()
+        return '', 204 # No Content
 
 if __name__ == '__main__':
     create_table()  # Start the app and create the table if it doesn't exist
