@@ -103,7 +103,7 @@ def edit_todo(id):
 @app.route('/<status>')
 def index(status=None):
     todos = view_todos_by_status(status)
-    return render_template('index.html', todos=todos, status=status)
+    return render_template('index.html', todos=todos, statusa=status)
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -113,14 +113,15 @@ def add():
 
 @app.route('/update/<int:id>', methods=['POST'])
 def update(id):
-    new_status = request.form.get('status')
+    new_status = request.form['status']
     update_status(id, new_status)
-    return redirect(url_for('index'))
+    return '', 204
 
 @app.route('/delete/<int:id>', methods=['GET', 'POST'])
 def delete(id):
     delete_todo(id)
     return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     create_table()  # Start the app and create the table if it doesn't exist

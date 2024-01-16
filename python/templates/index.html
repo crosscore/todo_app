@@ -14,19 +14,9 @@
     <ul>
         {% for todo in todos %}
         <li>
-            <a href="/todo/{{ todo['ID'] }}">{{ todo['TASK'] }}</a> - 
-            {% if todo['STATUS'] == 'completed' %}
-                {{ todo['STATUS'] }} ✅
-            {% else %}
-                {{ todo['STATUS'] }}
-            {% endif %}
-            <form method="post" action="/update/{{ todo['ID'] }}">
-                <select name="status">
-                    <option value="pending" {% if todo['STATUS'] == 'pending' %}selected{% endif %}>Pending</option>
-                    <option value="completed" {% if todo['STATUS'] == 'completed' %}selected{% endif %}>Completed</option>
-                </select>
-                <input type="submit" value="Update">
-            </form>
+            <a href="/todo/{{ todo['ID'] }}">{{ todo['TASK'] }}</a> -
+            <input type="checkbox" class="status-checkbox" data-id="{{ todo['ID'] }}"
+                   {% if todo['STATUS'] == 'completed' %}checked{% endif %}>
         </li>
         {% endfor %}
     </ul>
@@ -38,3 +28,4 @@
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>   
 </html>
+

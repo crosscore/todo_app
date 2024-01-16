@@ -1,14 +1,22 @@
-// scripts.js
-
-// Confirm deletion of ToDo item
+// static/js/scripts.js
 document.addEventListener('DOMContentLoaded', function () {
-    const deleteLinks = document.querySelectorAll('.delete-todo');
-
-    deleteLinks.forEach(function(link) {
-        link.addEventListener('click', function(event) {
-            if (!confirm('Are you sure you want to delete this ToDo?')) {
-                event.preventDefault();
-            }
+    document.querySelectorAll('.status-checkbox').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const todoId = this.dataset.id;
+            const newStatus = this.checked ? 'completed' : 'pending';
+            fetch(`/update/${todoId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `status=${newStatus}`
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Status updated to ${newStatus}');
+                } else {
+                    console.error('Error updating status');
+                }
+            });
         });
     });
 });
