@@ -1,0 +1,16 @@
+<!-- templates/todo_detail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ToDo Detail</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>ToDo Detail</h1>
+    <p>Task: {{ todo['TASK'] }}</p>
+    <p>Status: {{ todo['STATUS'] }}</p>
+    <p>Created At: {{ todo['CREATED_AT'] }}</p>
+    <p>Updated At: {{ todo['UPDATED_AT'] }}</p>
+    <a href="/">Back to List</a>
+</body>
+</html>

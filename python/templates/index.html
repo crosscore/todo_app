@@ -1,0 +1,30 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ToDo App</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>ToDo List</h1>
+    <form method="post" action="/add">
+        <input type="text" name="task" placeholder="Add new task">
+        <input type="submit" value="Add">
+    </form>
+    <ul>
+        {% for todo in todos %}
+        <li>
+            <a href="/todo/{{ todo['ID'] }}">{{ todo['TASK'] }}</a> - {{ todo['STATUS'] }}
+            <form method="post" action="/update/{{ todo['ID'] }}">
+                <select name="status">
+                    <option value="pending" {% if todo['STATUS'] == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="completed" {% if todo['STATUS'] == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+                <input type="submit" value="Update">
+            </form>
+            <a href="/delete/{{ todo['ID'] }}">Delete</a>
+        </li>
+        {% endfor %}
+    </ul>    
+</body>
+</html>
