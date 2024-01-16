@@ -37,7 +37,6 @@ def add_todo(task):
     conn.commit()
     conn.close()
 
-
 # Function to display ToDos by status
 def view_todos_by_status(status):
     conn = get_db_connection()
@@ -75,6 +74,31 @@ def todo_detail(id):
     conn.close()
     return render_template('todo_detail.html', todo=todo)
 
+@app.route('/reset')
+def reset_todos():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE TODOS SET STATUS = 'pending'")
+    conn.commit()
+    conn.close()
+    return redirect(url_for('index'))
+
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit_todo(id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        new_task = request.form['task']
+        cursor.execute("UPDATE TODOS SET TASK = ? WHERE ID = ?", (new_task, id))
+        conn.commit()
+        return redirect(url_for('todo_detail', id=id))
+
+    cursor.execute("SELECT * FROM TODOS WHERE ID = ?", (id,))
+    todo = cursor.fetchone()
+    conn.close()
+    return render_template('todo_detail.html', todo=todo)
+
 @app.route('/')
 @app.route('/<status>')
 def index(status=None):
@@ -93,7 +117,7 @@ def update(id):
     update_status(id, new_status)
     return redirect(url_for('index'))
 
-@app.route('/delete/<int:id>')
+@app.route('/delete/<int:id>', methods=['GET', 'POST'])
 def delete(id):
     delete_todo(id)
     return redirect(url_for('index'))

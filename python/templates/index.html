@@ -27,11 +27,14 @@
                 </select>
                 <input type="submit" value="Update">
             </form>
-            <a href="/delete/{{ todo['ID'] }}" class="delete-todo">Delete</a>
         </li>
         {% endfor %}
-    </ul>    
+    </ul>
+
+    <form action="/reset" method="get">
+        <input type="submit" value="Reset All to Pending">
+    </form>
+    
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>   
-</body>
 </html>
