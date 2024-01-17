@@ -5,14 +5,12 @@ import os
 
 app = Flask(__name__)
 
-# Database connection
 def get_db_connection():
     db_path = os.path.join(app.root_path, 'todo.db')
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
-# Create a table called TODOS
 def create_table():
     conn = get_db_connection()
     try:
@@ -23,43 +21,38 @@ def create_table():
                         STATUS TEXT NOT NULL,
                         CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         UPDATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        ORDER INTEGER)''')
+                        ITEM_ORDER INTEGER)''')
         conn.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
     finally:
         conn.close()
 
-
-# Function to add new ToDo
 def add_todo(task):
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT MAX(ORDER) FROM TODOS")
+        cursor.execute("SELECT MAX(ITEM_ORDER) FROM TODOS")
         max_order = cursor.fetchone()[0]
         next_order = 1 if max_order is None else max_order + 1
-
-        cursor.execute("INSERT INTO TODOS (TASK, STATUS, ORDER) VALUES (?, 'pending', ?)", (task, next_order))
+        cursor.execute("INSERT INTO TODOS (TASK, STATUS, ITEM_ORDER) VALUES (?, 'pending', ?)", (task, next_order))
         conn.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
     finally:
         conn.close()
 
-# Function to display ToDos by status
 def view_todos_by_status(status):
     conn = get_db_connection()
     cursor = conn.cursor()
     if status:
-        cursor.execute("SELECT * FROM TODOS WHERE STATUS = ?", (status,))
+        cursor.execute("SELECT * FROM TODOS WHERE STATUS = ? ORDER BY ITEM_ORDER", (status,))
     else:
-        cursor.execute("SELECT * FROM TODOS")
+        cursor.execute("SELECT * FROM TODOS ORDER BY ITEM_ORDER")
     todos = cursor.fetchall()
     conn.close()
     return todos
 
-# Function to update the status of a ToDo
 def update_status(id, new_status):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -67,7 +60,6 @@ def update_status(id, new_status):
     conn.commit()
     conn.close()
 
-# Function to delete a ToDo
 def delete_todo(id):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -137,19 +129,18 @@ def move_item(id, direction):
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT ORDER FROM TODOS WHERE ID = ?", (id,))
+        cursor.execute("SELECT ITEM_ORDER FROM TODOS WHERE ID = ?", (id,))
         current_order = cursor.fetchone()[0]
         if direction == 'up':
-            # 上に移動する場合
-            cursor.execute("SELECT ID, ORDER FROM TODOS WHERE ORDER < ? ORDER BY ORDER DESC LIMIT 1", (current_order,))
+            cursor.execute("SELECT ID, ITEM_ORDER FROM TODOS WHERE ITEM_ORDER < ? ORDER BY ITEM_ORDER DESC LIMIT 1", (current_order,))
         elif direction == 'down':
-            # 下に移動する場合
-            cursor.execute("SELECT ID, ORDER FROM TODOS WHERE ORDER > ? ORDER BY ORDER ASC LIMIT 1", (current_order,))
+            cursor.execute("SELECT ID, ITEM_ORDER FROM TODOS WHERE ITEM_ORDER > ? ORDER BY ITEM_ORDER ASC LIMIT 1", (current_order,))
         row = cursor.fetchone()
         if row:
             swap_id, swap_order = row
-            cursor.execute("UPDATE TODOS SET ORDER = ? WHERE ID = ?", (swap_order, id))
-            cursor.execute("UPDATE TODOS SET ORDER = ? WHERE ID = ?", (current_order, swap_id))
+            cursor.execute("UPDATE TODOS SET ITEM_ORDER = -1 WHERE ID = ?", (id,))
+            cursor.execute("UPDATE TODOS SET ITEM_ORDER = ? WHERE ID = ?", (current_order, swap_id))
+            cursor.execute("UPDATE TODOS SET ITEM_ORDER = ? WHERE ID = ?", (swap_order, id))
             conn.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
@@ -158,6 +149,7 @@ def move_item(id, direction):
         conn.close()
         return '', 204 # No Content
 
+
 if __name__ == '__main__':
-    create_table()  # Start the app and create the table if it doesn't exist
+    create_table()
     app.run(host='0.0.0.0', debug=True)
