@@ -41,3 +41,57 @@ a {
     background-color: #4CAF50;
     border-color: #4CAF50;
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-100%); }
+}
+
+@keyframes slideDown {
+    from { transform: translateY(0); }
+    to { transform: translateY(100%); }
+}
+
+.slide-up {
+    animation: slideUp 300ms ease-in-out;
+}
+
+.slide-down {
+    animation: slideDown 300ms ease-in-out;
+}
+
+@keyframes slideFadeUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-100%); opacity: 0.5; }
+}
+
+@keyframes slideFadeDown {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100%); opacity: 0.5; }
+}
+
+.slide-fade-up {
+    animation: slideFadeUp 300ms ease-in-out;
+}
+
+.slide-fade-down {
+    animation: slideFadeDown 300ms ease-in-out;
+}
