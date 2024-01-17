@@ -25,11 +25,11 @@ li {
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 5px;
-    color: #fff; /* リストアイテムのテキスト色を白に変更 */
+    color: #ffffff; /* リストアイテムのテキスト色を白に変更 */
 }
 
 a {
-    color: #f4ecff; /* リンク色を明るい紫に変更 */
+    color: rgb(171, 182, 228);
     text-decoration: none;
 }
 
