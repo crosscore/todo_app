@@ -3,11 +3,12 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #121212; /* ダーク背景色に変更 */
+    color: #fff; /* テキスト色を白に変更 */
 }
 
 h1 {
-    color: #333;
+    color: #fff; /* ヘッダーのテキスト色も白に変更 */
 }
 
 form {
@@ -20,14 +21,15 @@ ul {
 }
 
 li {
-    background-color: #fff;
+    background-color: #313131; /* リストアイテムの背景色を暗くする */
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 5px;
+    color: #fff; /* リストアイテムのテキスト色を白に変更 */
 }
 
 a {
-    color: #00f;
+    color: #f4ecff; /* リンク色を明るい紫に変更 */
     text-decoration: none;
 }
 
