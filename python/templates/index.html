@@ -7,8 +7,9 @@
 </head>
 <body>
     <h1>ToDo List</h1>
-    <p id="current-date"></p> <!-- ここに現在の日時を表示 -->
+    <p id="current-date"></p> <!-- 現在の日時を表示 -->
     <p>Weather: {{ temperature }}°C, {{ weather }} (API Access Count: {{ api_access_count }})</p>
+    <p>Location: <span id="location">{{ location }}</span></p>
     <form method="post" action="/add">
         <input type="text" name="task" placeholder="Add new task">
         <input type="submit" value="Add">

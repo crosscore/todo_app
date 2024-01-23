@@ -24,8 +24,9 @@ def get_weather():
     # 気温（ケルビンから摂氏に変換）と天候を取得
     temperature = round(data['main']['temp'] - 273.15, 1)
     weather = data['weather'][0]['main']
+    location = data['name']
     api_access_count += 1
-    return temperature, weather
+    return temperature, weather, location
 
 def get_date():
     # 現在の日付を取得
@@ -97,14 +98,14 @@ def delete_todo(id):
 @app.route('/<status>', endpoint='new_index')
 def index(status=None):
     todos = view_todos_by_status(status)
-    temperature, weather = get_weather()
+    temperature, weather, location= get_weather()
     date = get_date()
     return render_template('index.html', todos=todos, status=status, temperature=temperature, weather=weather, date=date, api_access_count=api_access_count)
 
 @app.route('/weather')
 def weather():
-    temperature, weather = get_weather()
-    return jsonify({'temperature': temperature, 'weather': weather})
+    temperature, weather, location = get_weather()
+    return jsonify({'temperature': temperature, 'weather': weather, 'location': location})
 
 @app.route('/todo/<int:id>')
 def todo_detail(id):

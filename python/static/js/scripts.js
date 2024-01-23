@@ -68,12 +68,20 @@ function updateDate() {
 }
 
 $(document).ready(function(){
-    setInterval(updateDate, 1000); // 1秒ごとに更新
+    setInterval(updateDate, 1000);
 
-    setInterval(function(){
+    // 天気情報を取得する関数
+    function getWeather() {
         $.getJSON('/weather', function(data) {
             $('#temperature').text(data.temperature + '°C');
-            $('#weather').text(data.weather);
+            $('#weather').text(data.weather + ' in ' + data.location);
+            $('#location').text(data.location);
         });
-    }, 60000);
+    }
+
+    // ページ読み込み時に天気情報を取得
+    getWeather();
+
+    // 60秒ごとに天気情報を更新
+    setInterval(getWeather, 60000);
 });
