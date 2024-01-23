@@ -60,3 +60,20 @@ function moveItem(element, direction) {
         }
     });
 }
+
+function updateDate() {
+    var now = new Date();
+    var dateString = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + ' ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+    $('#current-date').text(dateString);
+}
+
+$(document).ready(function(){
+    setInterval(updateDate, 1000); // 1秒ごとに更新
+
+    setInterval(function(){
+        $.getJSON('/weather', function(data) {
+            $('#temperature').text(data.temperature + '°C');
+            $('#weather').text(data.weather);
+        });
+    }, 60000);
+});

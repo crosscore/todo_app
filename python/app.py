@@ -1,9 +1,35 @@
 #app.py
-from flask import Flask, render_template, request, redirect, url_for
+import requests
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
 import os
 
 app = Flask(__name__)
+
+# OpenWeatherMap API Key
+#API_KEY = os.environ['OPEN_WEATHER_MAP_API_KEY']
+API_KEY = '15493e96605ee424706ffe8b5a533ee8'
+######
+
+# APIアクセスのカウンター
+api_access_count = 0
+
+def get_weather():
+    global api_access_count
+    # 東京の天気情報を取得
+    response = requests.get(f'http://api.openweathermap.org/data/2.5/weather?q=Tokyo,jp&appid={API_KEY}')
+    data = response.json()
+
+    # 気温（ケルビンから摂氏に変換）と天候を取得
+    temperature = round(data['main']['temp'] - 273.15, 1)
+    weather = data['weather'][0]['main']
+    api_access_count += 1
+    return temperature, weather
+
+def get_date():
+    # 現在の日付を取得
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 def get_db_connection():
     db_path = os.path.join(app.root_path, 'todo.db')
@@ -32,10 +58,10 @@ def add_todo(task):
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT MAX(ITEM_ORDER) FROM TODOS")
-        max_order = cursor.fetchone()[0]
-        next_order = 1 if max_order is None else max_order + 1
-        cursor.execute("INSERT INTO TODOS (TASK, STATUS, ITEM_ORDER) VALUES (?, 'pending', ?)", (task, next_order))
+        # 既存のすべての ITEM_ORDER を1増やす
+        cursor.execute("UPDATE TODOS SET ITEM_ORDER = ITEM_ORDER + 1")
+        # 新しいタスクを ITEM_ORDER が 1 の位置に追加
+        cursor.execute("INSERT INTO TODOS (TASK, STATUS, ITEM_ORDER) VALUES (?, 'pending', 1)", (task,))
         conn.commit()
     except sqlite3.Error as e:
         print(f"Database error: {e}")
@@ -66,6 +92,19 @@ def delete_todo(id):
     cursor.execute("DELETE FROM TODOS WHERE ID = ?", (id,))
     conn.commit()
     conn.close()
+
+@app.route('/')
+@app.route('/<status>', endpoint='new_index')
+def index(status=None):
+    todos = view_todos_by_status(status)
+    temperature, weather = get_weather()
+    date = get_date()
+    return render_template('index.html', todos=todos, status=status, temperature=temperature, weather=weather, date=date, api_access_count=api_access_count)
+
+@app.route('/weather')
+def weather():
+    temperature, weather = get_weather()
+    return jsonify({'temperature': temperature, 'weather': weather})
 
 @app.route('/todo/<int:id>')
 def todo_detail(id):
@@ -100,12 +139,6 @@ def edit_todo(id):
     todo = cursor.fetchone()
     conn.close()
     return render_template('todo_detail.html', todo=todo)
-
-@app.route('/')
-@app.route('/<status>')
-def index(status=None):
-    todos = view_todos_by_status(status)
-    return render_template('index.html', todos=todos, statusa=status)
 
 @app.route('/add', methods=['POST'])
 def add():
