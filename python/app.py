@@ -8,9 +8,7 @@ import os
 app = Flask(__name__)
 
 # OpenWeatherMap API Key
-#API_KEY = os.environ['OPEN_WEATHER_MAP_API_KEY']
-API_KEY = '15493e96605ee424706ffe8b5a533ee8'
-######
+API_KEY = os.environ['OPEN_WEATHER_MAP_API_KEY']
 
 # APIアクセスのカウンター
 api_access_count = 0
