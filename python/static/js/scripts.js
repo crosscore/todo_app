@@ -82,6 +82,10 @@ $(document).ready(function(){
     // ページ読み込み時に天気情報を取得
     getWeather();
 
-    // 60秒ごとに天気情報を更新
-    setInterval(getWeather, 60000);
+    // 初回の呼び出しから60秒後に定期的な更新を開始
+    setTimeout(function() {
+        setInterval(getWeather, 60000);
+    }, 60000);
 });
+
+
