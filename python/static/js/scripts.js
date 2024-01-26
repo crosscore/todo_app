@@ -67,6 +67,10 @@ function updateDate() {
 }
 
 $(document).ready(function(){
+    // 現在の日時を更新
+    updateDate();
+    setInterval(updateDate, 1000); // 1秒ごとに更新
+
     // 天気情報を取得する関数
     function getWeather() {
         var lastCall = localStorage.getItem('lastWeatherCall');
