@@ -19,7 +19,7 @@
         <li>
             <a href="/todo/{{ todo['ID'] }}">{{ todo['TASK'] }}</a> -
             <input type="checkbox" class="status-checkbox" data-id="{{ todo['ID'] }}"
-                   {% if todo['STATUS'] == 'completed' %}checked{% endif %}>
+                    {% if todo['STATUS'] == 'completed' %}checked{% endif %}>
             <button data-id="{{ todo['ID'] }}" onclick="moveItem(this, 'up')">⬆️</button>
             <button data-id="{{ todo['ID'] }}" onclick="moveItem(this, 'down')">⬇️</button> 
         </li>

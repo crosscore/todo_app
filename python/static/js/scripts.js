@@ -41,11 +41,6 @@ function moveItem(element, direction) {
             // アニメーションクラスの削除
             li.classList.remove('slide-fade-up', 'slide-fade-down');
             nextLi.classList.remove('slide-fade-up', 'slide-fade-down');
-
-            // 完全なアニメーションの完了を待つ
-            setTimeout(function() {
-                location.reload();
-            }, 300);
         }, 250); // アニメーション時間
     }
 
@@ -83,9 +78,9 @@ $(document).ready(function(){
     getWeather();
 
     // 初回の呼び出しから60秒後に定期的な更新を開始
-    setTimeout(function() {
-        setInterval(getWeather, 60000);
-    }, 60000);
+    // setTimeout(function() {
+    //     setInterval(getWeather, 60000);
+    // }, 60000);
 });
 
 
