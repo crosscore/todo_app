@@ -31,17 +31,68 @@ li {
 a {
     color: rgb(171, 182, 228);
     text-decoration: none;
+    transition: color 0.3s ease-in-out, text-decoration 0.3s ease-in-out;
+}
+
+a:hover, a:focus {
+    color: #e6e6e6; /* ホバー時の色 */
+    text-decoration: underline; /* 下線を追加 */
+}
+
+
+/* ボタンの基本スタイル */
+button {
+    background-color: #424242; /* ダークモード用の背景色 */
+    color: white; /* テキスト色 */
+    border: none; /* 境界線なし */
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 3px; /* 角丸 */
+    cursor: pointer; /* カーソルスタイル */
+    transition: background-color 0.3s; /* 背景色のトランジション */
+}
+
+/* ホバー時のボタンのスタイル */
+button:hover {
+    background-color: #575757; /* ホバー時の背景色 */
+}
+
+/* アクティブ時（クリックされた時）のボタンのスタイル */
+button:active {
+    background-color: #303030; /* アクティブ時の背景色 */
 }
 
 .status-checkbox {
     width: 20px;
     height: 20px;
     cursor: pointer;
+    appearance: none; /* デフォルトのチェックボックススタイルをリセット */
+    background-color: #424242; /* ダークモード背景色 */
+    border: 1px solid #575757; /* 枠線 */
+    border-radius: 3px; /* 角丸 */
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .status-checkbox:checked {
     background-color: #4CAF50;
     border-color: #4CAF50;
+}
+
+.status-checkbox:hover {
+    border-color: #e6e6e6; /* ホバー時の枠線色 */
+}
+
+input[type="text"], input[type="submit"] {
+    background-color: #424242; /* ダークモード背景色 */
+    color: white; /* テキスト色 */
+    border: 1px solid #575757; /* 枠線 */
+    padding: 5px; /* パディング */
+    border-radius: 3px; /* 角丸 */
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+input[type="text"]:hover, input[type="submit"]:hover {
+    border-color: #e6e6e6; /* ホバー時の枠線色 */
 }
 
 @keyframes fadeIn {
