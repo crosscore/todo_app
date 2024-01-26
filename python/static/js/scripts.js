@@ -65,24 +65,25 @@ function updateDate() {
 $(document).ready(function(){
     // 天気情報を取得する関数
     function getWeather() {
-        $.getJSON('/weather', function(data) {
+        var lastCall = localStorage.getItem('lastWeatherCall');
+        var now = new Date().getTime();
+
+        // 前回のAPI呼び出しから180秒経過していない場合はキャッシュを使用
+        if (!lastCall || now - lastCall > 180000) {
+            $.getJSON('/weather', function(data) {
             $('#temperature').text(data.temperature + '°C');
             $('#weather').text(data.weather + ' in ' + data.location);
             $('#location').text(data.location);
-        });
+            localStorage.setItem('lastWeatherCall', now)
+            });
+        }
     }
 
     // 初回のページ読み込み時に天気情報を取得
-    var initialLoad = true;
-    if (initialLoad) {
-        getWeather();
-        initialLoad = false;
-    }
+    getWeather();
 
     // 初回の呼び出しから180秒後に定期的な更新を開始
-    setTimeout(function() {
-        setInterval(getWeather, 180000);
-    }, 180000);
+    setInterval(getWeather, 180000);
 });
 
 
