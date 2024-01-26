@@ -1,4 +1,8 @@
 // static/js/scripts.js
+
+// 変数定義
+const API_CALL_WAIT_TIME = 180000;
+
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.status-checkbox').forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
@@ -68,22 +72,36 @@ $(document).ready(function(){
         var lastCall = localStorage.getItem('lastWeatherCall');
         var now = new Date().getTime();
 
-        // 前回のAPI呼び出しから180秒経過していない場合はキャッシュを使用
-        if (!lastCall || now - lastCall > 180000) {
-            $.getJSON('/weather', function(data) {
-            $('#temperature').text(data.temperature + '°C');
-            $('#weather').text(data.weather + ' in ' + data.location);
-            $('#location').text(data.location);
-            localStorage.setItem('lastWeatherCall', now)
-            });
+        // キャッシュされたデータを使用する条件をチェック
+        if (lastCall && now - lastCall < API_CALL_WAIT_TIME) {
+            var cachedData = JSON.parse(localStorage.getItem('weatherData'));
+            if (cachedData) {
+                updateWeatherInfo(cachedData);
+                return;
+            }
         }
+
+        // APIからデータを取得
+        $.getJSON('/weather', function(data) {
+            // 新しい天気情報を表示
+            updateWeatherInfo(data);
+
+            // 新しい天気情報をローカルストレージに保存
+            localStorage.setItem('weatherData', JSON.stringify(data));
+            localStorage.setItem('lastWeatherCall', now);
+        });
+    }
+
+    // 天気情報を表示する関数
+    function updateWeatherInfo(data) {
+        $('#temperature').text(data.temperature + '°C');
+        $('#weather').text(data.weather + ' in ' + data.location);
+        $('#location').text(data.location);
     }
 
     // 初回のページ読み込み時に天気情報を取得
     getWeather();
 
-    // 初回の呼び出しから180秒後に定期的な更新を開始
-    setInterval(getWeather, 180000);
+    // 初回の呼び出しからAPI_CALL_WAIT_TIME秒後に定期的な更新を開始
+    setInterval(getWeather, API_CALL_WAIT_TIME);
 });
-
-

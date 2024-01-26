@@ -3,26 +3,40 @@ import requests
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
+import time
 import os
+
+# グローバル変数の定義
+last_api_call = 0
+cached_data = None
+API_KEY = os.environ['OPEN_WEATHER_MAP_API_KEY']
+api_access_count = 0
 
 app = Flask(__name__)
 
-# OpenWeatherMap API Key
-API_KEY = os.environ['OPEN_WEATHER_MAP_API_KEY']
-
-# APIアクセスのカウンター
-api_access_count = 0
-
 def get_weather():
-    global api_access_count
-    # 東京の天気情報を取得
+    global last_api_call, cached_data, api_access_count
+    current_time = time.time()
+
+    # API呼び出しのキャッシュ有効時間（秒）
+    CACHE_DURATION = 180  # 3分
+
+    # 最後のAPI呼び出しから3分未満の場合はキャッシュされたデータを使用
+    if last_api_call and (current_time - last_api_call < CACHE_DURATION):
+        return cached_data
+
+    # APIを呼び出し、キャッシュする
     response = requests.get(f'http://api.openweathermap.org/data/2.5/weather?q=Tokyo,jp&appid={API_KEY}')
     data = response.json()
 
-    # 気温（ケルビンから摂氏に変換）と天候を取得
     temperature = round(data['main']['temp'] - 273.15, 1)
     weather = data['weather'][0]['main']
     location = data['name']
+    
+    # キャッシュの更新
+    last_api_call = current_time
+    cached_data = (temperature, weather, location)
+
     api_access_count += 1
     return temperature, weather, location
 
@@ -184,4 +198,4 @@ def move_item(id, direction):
 
 if __name__ == '__main__':
     create_table()
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
