@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: `status=${newStatus}`
             }).then(response => {
                 if (response.ok) {
-                    console.log('Status updated to ${newStatus}');
+                    console.log(`Status updated to ${newStatus}`);
                 } else {
                     console.error('Error updating status');
                 }
